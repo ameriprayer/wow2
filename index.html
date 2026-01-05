@@ -41,7 +41,7 @@ h3 { color: #2196F3; margin-top: 15px; margin-bottom: 10px; font-size: 1.5em; }
 
 <h2>PAS Legal Document</h2>
 
-<!-- PASTE YOUR PLAIN TEXT BELOW -->
+<!-- PASTE ALL YOUR PLAIN TEXT BELOW -->
 <div id="pas-legal-raw">
 I always emphasize the theme of "Some Gave All" in terms of service to the military (ie died in action, their last breath was in the midst of war ), but at the same time I think we should try to remember the unborn babies who never even got the chance for a first breath of life. They also "gave their all" unfortunately and sadly without a cause. I encourage everybody to continue to defend the unborn and fight (not literally) for their opportunity to breath a first breath, and live the life God intended for them . 
 </div>
@@ -50,63 +50,46 @@ I always emphasize the theme of "Some Gave All" in terms of service to the milit
 // Grab raw text
 const rawDiv = document.getElementById('pas-legal-raw');
 const text = rawDiv.innerText.trim();
-const paragraphs = text.split(/\n{1,2}/).map(p => p.trim()).filter(p => p);
-
-// Container for styled content
 const styledDiv = document.createElement('div');
 
 // PAS Legal color palette
 const colors = ['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
 const headingColors = ['#4CAF50','#2196F3','#FFEB3B'];
 
-// Helper to color each word with cycling colors
-function coloredSpan(word, index) {
-  const span = document.createElement('span');
-  span.style.color = colors[index % colors.length];
-  span.innerText = word + " ";
-  return span;
-}
+// Split text into sentences by punctuation or spaces
+const sentences = text.split(/([.!?]\s+)|(\n)/).filter(Boolean);
 
-// Process paragraphs
-paragraphs.forEach((pText, i) => {
-  let p;
+// Process each sentence or block
+sentences.forEach((sentence, idx) => {
+  let el;
 
-  // Headings: every 4th paragraph = h3 subtitle
-  if (i % 4 === 0) {
-    p = document.createElement('h3');
-    p.style.color = headingColors[i % headingColors.length];
-    p.innerText = pText;
+  // Detect NOTE:
+  if (/NOTE:/i.test(sentence)) {
+    el = document.createElement('p');
+    el.className = 'note';
+    el.innerText = sentence.replace(/NOTE:/i,'').trim();
   }
-  // Section heading: every 8th paragraph
-  else if (i % 8 === 0) {
-    p = document.createElement('div');
-    p.className = 'section-heading';
-    p.innerText = pText;
-  }
-  // Flashing briefcase detection
-  else if (/BRIEFCASE/i.test(pText)) {
-    p = document.createElement('p');
+  // Detect BRIEFCASE
+  else if (/BRIEFCASE/i.test(sentence)) {
+    el = document.createElement('p');
     const span = document.createElement('span');
     span.className = 'flash-briefcase';
-    span.innerText = pText;
-    p.appendChild(span);
+    span.innerText = sentence.trim();
+    el.appendChild(span);
   }
-  // Notes detection
-  else if (/NOTE:/i.test(pText)) {
-    p = document.createElement('p');
-    p.className = 'note';
-    p.innerText = pText.replace(/NOTE:/i,'');
-  }
-  // Default: sprinkle colors word by word
+  // Default: sprinkle PAS legal colors word by word
   else {
-    p = document.createElement('p');
-    const words = pText.split(' ');
-    words.forEach((word, idx) => {
-      p.appendChild(coloredSpan(word, idx));
+    el = document.createElement('p');
+    const words = sentence.trim().split(/\s+/);
+    words.forEach((word, wIdx) => {
+      const span = document.createElement('span');
+      span.style.color = colors[wIdx % colors.length];
+      span.innerText = word + " ";
+      el.appendChild(span);
     });
   }
 
-  styledDiv.appendChild(p);
+  styledDiv.appendChild(el);
 });
 
 // Replace raw div with styled content
