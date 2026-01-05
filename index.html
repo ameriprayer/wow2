@@ -15,7 +15,11 @@ body{
   font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
   font-size:var(--body-font-size);
   padding:25px;
-  line-height:1.5;
+  line-height:1.6;
+}
+
+p{
+  margin:14px 0; /* 🔑 forces visible paragraph breaks */
 }
 
 h2{
@@ -25,18 +29,11 @@ h2{
   margin-top:20px;
 }
 
-h3{
-  color:#2196F3;
-  margin-top:15px;
-  margin-bottom:10px;
-  font-size:1.5em;
-}
-
 .section-heading{
   color:#FFEB3B;
   font-weight:bold;
   font-size:1.2em;
-  margin-top:15px;
+  margin:18px 0 8px;
   padding-left:6px;
   border-left:4px solid #FFEB3B;
 }
@@ -47,7 +44,7 @@ h3{
   font-style:italic;
   padding:10px 15px;
   border-left:5px solid #F44336;
-  margin:15px 0;
+  margin:18px 0;
 }
 
 @keyframes flashBriefcase{
@@ -90,10 +87,15 @@ What Bill did not tell me when he offered me the job was that he was retiring in
 
 <script>
 const raw=document.getElementById('pas-legal-raw');
-const text=raw.innerText.trim();
 
-/* split ONLY on real paragraph breaks */
-const paragraphs=text.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+/* 🔑 textContent preserves true line breaks */
+let text=raw.textContent;
+
+/* normalize all line endings */
+text=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+
+/* split on ONE OR MORE blank lines */
+const paragraphs=text.split(/\n\s*\n+/).map(p=>p.trim()).filter(Boolean);
 
 const output=document.createElement('div');
 
@@ -101,11 +103,9 @@ const colors=['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
 
 function sprinkle(word){
   const span=document.createElement('span');
-  if(Math.random()<0.16){
-    span.style.color=colors[Math.floor(Math.random()*colors.length)];
-  }else{
-    span.style.color='#F5F5F5';
-  }
+  span.style.color=(Math.random()<0.16)
+    ? colors[Math.floor(Math.random()*colors.length)]
+    : '#F5F5F5';
   span.textContent=word+' ';
   return span;
 }
@@ -123,7 +123,7 @@ paragraphs.forEach(pText=>{
     s.textContent=pText;
     p.appendChild(s);
   }
-  else if(pText.length<80 && /^[A-Z].*\?$/.test(pText)){
+  else if(pText.length<90 && /^[A-Z].*\?$/.test(pText)){
     const h=document.createElement('div');
     h.className='section-heading';
     h.textContent=pText;
