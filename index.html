@@ -2,44 +2,66 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PAS Legal Document</title>
+<title>PAS Legal Auto-Color</title>
 
 <style>
-/* ===== BODY TEXT SIZE (CHANGE THIS NUMBER ONLY) ===== */
-body {
-  background-color: #000;
-  color: #F5F5F5;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 25px;
-  line-height: 1.55;
-  font-size: 30px; /* ← YOU CHANGE THIS */
+:root{
+  --body-font-size: 22px; /* 🔧 CHANGE THIS NUMBER ANYTIME */
 }
 
-/* ===== HEADINGS ===== */
-h2 {
-  color: #4CAF50;
-  font-size: 2.4em;
-  border-bottom: 3px solid #4CAF50;
-}
-h3 {
-  color: #2196F3;
-  font-size: 1.6em;
+body{
+  background-color:#000000;
+  color:#F5F5F5;
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  font-size:var(--body-font-size);
+  padding:25px;
+  line-height:1.5;
 }
 
-/* ===== PAS LEGAL SPRINKLES (CSS ONLY) ===== */
-p span:nth-child(7n) { color: #FF9800; }
-p span:nth-child(11n) { color: #FFEB3B; }
-p span:nth-child(17n) { color: #2196F3; }
-p span:nth-child(23n) { color: #4CAF50; }
-p span:nth-child(29n) { color: #F44336; }
+h2{
+  color:#4CAF50;
+  border-bottom:3px solid #4CAF50;
+  padding-bottom:8px;
+  margin-top:20px;
+}
 
-/* ===== NOTES ===== */
-.note {
-  background:#1a1a1a;
+h3{
+  color:#2196F3;
+  margin-top:15px;
+  margin-bottom:10px;
+  font-size:1.5em;
+}
+
+.section-heading{
+  color:#FFEB3B;
+  font-weight:bold;
+  font-size:1.2em;
+  margin-top:15px;
+  padding-left:6px;
+  border-left:4px solid #FFEB3B;
+}
+
+.note{
+  background-color:#1A1A1A;
   color:#F44336;
-  padding:12px;
-  border-left:5px solid #F44336;
   font-style:italic;
+  padding:10px 15px;
+  border-left:5px solid #F44336;
+  margin:15px 0;
+}
+
+@keyframes flashBriefcase{
+  0%{color:#FF9800;}
+  25%{color:#FFEB3B;}
+  50%{color:#4CAF50;}
+  75%{color:#FFEB3B;}
+  100%{color:#FF9800;}
+}
+
+.flash-briefcase{
+  font-weight:bold;
+  font-size:1.3em;
+  animation:flashBriefcase 1s infinite;
 }
 </style>
 </head>
@@ -67,21 +89,55 @@ What Bill did not tell me when he offered me the job was that he was retiring in
 </div>
 
 <script>
-const raw = document.getElementById("pas-legal-raw");
-const lines = raw.innerText.trim().split(/\n+/);
-const out = document.createElement("div");
+const raw=document.getElementById('pas-legal-raw');
+const text=raw.innerText.trim();
 
-lines.forEach(line => {
-  const p = document.createElement("p");
-  line.split(" ").forEach(word => {
-    const s = document.createElement("span");
-    s.textContent = word + " ";
+/* split ONLY on real paragraph breaks */
+const paragraphs=text.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+
+const output=document.createElement('div');
+
+const colors=['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
+
+function sprinkle(word){
+  const span=document.createElement('span');
+  if(Math.random()<0.16){
+    span.style.color=colors[Math.floor(Math.random()*colors.length)];
+  }else{
+    span.style.color='#F5F5F5';
+  }
+  span.textContent=word+' ';
+  return span;
+}
+
+paragraphs.forEach(pText=>{
+  const p=document.createElement('p');
+
+  if(/^NOTE:/i.test(pText)){
+    p.className='note';
+    p.textContent=pText.replace(/^NOTE:/i,'').trim();
+  }
+  else if(/BRIEFCASE/i.test(pText)){
+    const s=document.createElement('span');
+    s.className='flash-briefcase';
+    s.textContent=pText;
     p.appendChild(s);
-  });
-  out.appendChild(p);
+  }
+  else if(pText.length<80 && /^[A-Z].*\?$/.test(pText)){
+    const h=document.createElement('div');
+    h.className='section-heading';
+    h.textContent=pText;
+    output.appendChild(h);
+    return;
+  }
+  else{
+    pText.split(/\s+/).forEach(w=>p.appendChild(sprinkle(w)));
+  }
+
+  output.appendChild(p);
 });
 
-raw.replaceWith(out);
+raw.replaceWith(output);
 </script>
 
 </body>
