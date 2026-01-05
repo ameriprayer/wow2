@@ -4,17 +4,53 @@
 <meta charset="UTF-8">
 <title>PAS Legal Auto-Color</title>
 <style>
+/* ===== BODY TEXT (CHANGE SIZE HERE ONLY) ===== */
 body {
   background-color: #000000;
   color: #F5F5F5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 25px;
   line-height: 1.5;
+  font-size: 22px;   /* ← CHANGE THIS NUMBER ANYTIME */
 }
-h2 { color: #4CAF50; border-bottom: 3px solid #4CAF50; padding-bottom: 8px; margin-top: 20px; }
-h3 { color: #2196F3; margin-top: 15px; margin-bottom: 10px; font-size: 1.5em; }
-.section-heading { color: #FFEB3B; font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-left: 5px; border-left: 4px solid #FFEB3B; }
-.note { background-color: #1A1A1A; color: #F44336; font-style: italic; padding: 10px 15px; border-left: 5px solid #F44336; margin: 15px 0; }
+
+/* ===== HEADINGS ===== */
+h2 {
+  color: #4CAF50;
+  border-bottom: 3px solid #4CAF50;
+  padding-bottom: 8px;
+  margin-top: 20px;
+  font-size: 2.5em;
+}
+
+h3 {
+  color: #2196F3;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+
+/* ===== SECTION DIVIDERS ===== */
+.section-heading {
+  color: #FFEB3B;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-top: 15px;
+  padding-left: 5px;
+  border-left: 4px solid #FFEB3B;
+}
+
+/* ===== NOTES ===== */
+.note {
+  background-color: #1A1A1A;
+  color: #F44336;
+  font-style: italic;
+  padding: 10px 15px;
+  border-left: 5px solid #F44336;
+  margin: 15px 0;
+}
+
+/* ===== FLASHING BRIEFCASE ===== */
 @keyframes flashBriefcase {
   0% { color: #FF9800; }
   25% { color: #FFEB3B; }
@@ -22,15 +58,18 @@ h3 { color: #2196F3; margin-top: 15px; margin-bottom: 10px; font-size: 1.5em; }
   75% { color: #FFEB3B; }
   100% { color: #FF9800; }
 }
-.flash-briefcase { font-weight: bold; font-size: 1.3em; animation: flashBriefcase 1s infinite; }
+.flash-briefcase {
+  font-weight: bold;
+  font-size: 1.3em;
+  animation: flashBriefcase 1s infinite;
+}
 </style>
 </head>
 <body>
 
 <h2>PAS Legal Document</h2>
 
-<div id="pas-legal-raw">
-444 Greetings Bosch
+ggg Greetings Bosch
 I created this blog JUST FOR YOU! But anybody can see it (it's not private). It pertains to what happened in 1996 when I was teaching at Coachella Valley High School in the valley of the same name, in the city of Coachella and/or Thermal, near Indio, Palm Desert, & Palm Springs. It is the poor end of the valley with mucho (many) Latino immigrants. My classrooms were 95% Latino, maybe more.
 
 How Did I End Up in Coachella?
@@ -45,52 +84,50 @@ At the time I arrived in Jackson - planning to stay for the summer, I was actual
 What Bill Didn't Tell Me
 
 What Bill did not tell me when he offered me the job was that he was retiring in a few weeks. He did not tell me there would be a new principal when I started my first day as a regular teacher. My first job as a regular teacher. This would be significant as it turns out.
+<div id="pas-legal-raw">
+add plain text here
 </div>
 
 <script>
-// Grab raw text
 const rawDiv = document.getElementById('pas-legal-raw');
 const text = rawDiv.innerText.trim();
-const paragraphs = text.split(/\n{1,2}/).map(p => p.trim()).filter(p => p);
+const paragraphs = text.split(/\n{1,2}/).map(p => p.trim()).filter(Boolean);
 
 const styledDiv = document.createElement('div');
 
-// PAS Legal colors for sprinkling
-const highlightColors = ['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
+const highlightColors = [
+  '#4CAF50',
+  '#2196F3',
+  '#FFEB3B',
+  '#FF9800',
+  '#F44336'
+];
 
-// Helper: randomly color ~1 in 6 words
-function sprinkleColor(word) {
-  if (Math.random() < 0.16) { // ~16% chance to color
-    const span = document.createElement('span');
-    span.style.color = highlightColors[Math.floor(Math.random() * highlightColors.length)];
-    span.innerText = word + ' ';
-    return span;
-  } else {
-    const span = document.createElement('span');
-    span.style.color = '#F5F5F5';
-    span.innerText = word + ' ';
-    return span;
-  }
+// Sprinkle color on ~1 in 6 words
+function sprinkle(word) {
+  const span = document.createElement('span');
+  span.style.color = Math.random() < 0.16
+    ? highlightColors[Math.floor(Math.random() * highlightColors.length)]
+    : '#F5F5F5';
+  span.innerText = word + ' ';
+  return span;
 }
 
 paragraphs.forEach(pText => {
   const p = document.createElement('p');
 
-  // Notes
   if (/^NOTE:/i.test(pText)) {
     p.className = 'note';
     p.innerText = pText.replace(/^NOTE:/i,'').trim();
   }
-  // BRIEFCASE
   else if (/BRIEFCASE/i.test(pText)) {
     const span = document.createElement('span');
     span.className = 'flash-briefcase';
     span.innerText = pText;
     p.appendChild(span);
   }
-  // Default paragraph
   else {
-    pText.split(/\s+/).forEach(word => p.appendChild(sprinkleColor(word)));
+    pText.split(/\s+/).forEach(word => p.appendChild(sprinkle(word)));
   }
 
   styledDiv.appendChild(p);
