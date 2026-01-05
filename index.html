@@ -4,56 +4,29 @@
 <meta charset="UTF-8">
 <title>PAS Legal Auto-Color</title>
 <style>
-/* Base Style for Dark Mode */
+/* Base Dark Mode */
 body {
-  background-color: #000000; /* Deep Black Background */
-  color: #F5F5F5; /* Off-White/Light Gray */
+  background-color: #000000;
+  color: #F5F5F5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 25px;
   line-height: 1.5;
 }
 
-/* Headings */
-h2 {
-  color: #4CAF50; /* Emerald Green */
-  border-bottom: 3px solid #4CAF50;
-  padding-bottom: 8px;
-  margin-top: 20px;
-}
-h3 {
-  color: #2196F3; /* Bright Blue */
-  margin-top: 15px;
-  margin-bottom: 10px;
-  font-size: 1.5em;
-}
+/* Headings and Subheadings */
+h2 { color: #4CAF50; border-bottom: 3px solid #4CAF50; padding-bottom: 8px; margin-top: 20px; }
+h3 { color: #2196F3; margin-top: 15px; margin-bottom: 10px; font-size: 1.5em; }
 
-/* Section Separators */
-.section-heading {
-  color: #FFEB3B; /* Vibrant Yellow */
-  font-weight: bold;
-  font-size: 1.2em;
-  margin-top: 15px;
-  padding-left: 5px;
-  border-left: 4px solid #FFEB3B;
-}
+/* Section Dividers */
+.section-heading { color: #FFEB3B; font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-left: 5px; border-left: 4px solid #FFEB3B; }
 
-/* Highlighting Key Details */
-strong {
-  color: #FF9800; /* Bright Orange */
-  font-weight: bold;
-}
+/* Key Highlights */
+.highlight { color: #FF9800; font-weight: bold; }
 
-/* Notes / Quotes */
-.note {
-  background-color: #1A1A1A; /* Dark Gray */
-  color: #F44336; /* Red */
-  font-style: italic;
-  padding: 10px 15px;
-  border-left: 5px solid #F44336;
-  margin: 15px 0;
-}
+/* Notes */
+.note { background-color: #1A1A1A; color: #F44336; font-style: italic; padding: 10px 15px; border-left: 5px solid #F44336; margin: 15px 0; }
 
-/* Flashing Briefcase Animation */
+/* Flashing briefcase */
 @keyframes flashBriefcase {
   0% { color: #FF9800; }
   25% { color: #FFEB3B; }
@@ -61,72 +34,83 @@ strong {
   75% { color: #FFEB3B; }
   100% { color: #FF9800; }
 }
-.flash-briefcase {
-  font-weight: bold;
-  font-size: 1.3em;
-  animation: flashBriefcase 1s infinite;
-}
+.flash-briefcase { font-weight: bold; font-size: 1.3em; animation: flashBriefcase 1s infinite; }
 </style>
 </head>
 <body>
 
 <h2>PAS Legal Document</h2>
 
-<!-- Paste your plain text below -->
+<!-- PASTE YOUR PLAIN TEXT BELOW -->
 <div id="pas-legal-raw">
-I always emphasize the theme of "Some Gave All" in terms of service to the military (ie died in action, their last breath was in the midst of war ), but at the same time I think we should try to remember the unborn babies who never even got the chance for a first breath of life. They also "gave their all" unfortunately and sadly without a cause. I encourage everybody to continue to defend the unborn and fight (not literally) for their opportunity to breath a first breath, and live the life God intended for them . .
+I always emphasize the theme of "Some Gave All" in terms of service to the military (ie died in action, their last breath was in the midst of war ), but at the same time I think we should try to remember the unborn babies who never even got the chance for a first breath of life. They also "gave their all" unfortunately and sadly without a cause. I encourage everybody to continue to defend the unborn and fight (not literally) for their opportunity to breath a first breath, and live the life God intended for them . 
 </div>
-<!-- End paste -->
 
-<!-- Auto-styling script -->
 <script>
-// Grab the raw text
+// Grab raw text and split into sentences
 const rawDiv = document.getElementById('pas-legal-raw');
-const lines = rawDiv.innerText.split('\n');
-const styledContainer = document.createElement('div');
+const text = rawDiv.innerText.trim();
+const paragraphs = text.split(/\n{1,2}/).map(p => p.trim()).filter(p => p);
 
-// Helper function to detect headings, notes, flash, strong words
-lines.forEach(line => {
-  line = line.trim();
-  if (!line) return; // skip empty lines
+// Create container for styled content
+const styledDiv = document.createElement('div');
 
+// Color palettes for random sprinkling
+const colors = ['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
+const headingColors = ['#4CAF50','#2196F3','#FFEB3B'];
+
+// Function to create colored span
+function coloredSpan(text) {
+  const span = document.createElement('span');
+  span.style.color = colors[Math.floor(Math.random()*colors.length)];
+  span.innerText = text + " ";
+  return span;
+}
+
+// Process each paragraph
+paragraphs.forEach((pText,i) => {
   let p;
 
-  // Note detection: lines starting with NOTE:
-  if (line.toUpperCase().startsWith("NOTE:")) {
-    p = document.createElement('p');
-    p.className = 'note';
-    p.innerText = line.replace(/^NOTE:\s*/i,'');
+  // Make every 4th paragraph a subheading (h3)
+  if (i % 4 === 0) {
+    p = document.createElement('h3');
+    p.style.color = headingColors[i % headingColors.length];
+    p.innerText = pText;
   }
-  // Heading detection: lines ending with colon or ALL CAPS
-  else if (line.endsWith(':') || /^[A-Z0-9\s]+$/.test(line)) {
-    if (line.length < 50) {
-      p = document.createElement('h3'); // short lines = subheading
-    } else {
-      p = document.createElement('h2'); // long uppercase = main heading
-    }
-    p.innerText = line;
+  // Make every 8th paragraph a section-heading
+  else if (i % 8 === 0) {
+    p = document.createElement('div');
+    p.className = 'section-heading';
+    p.innerText = pText;
   }
-  // Flashing briefcase detection: line contains BRIEFCASE
-  else if (/BRIEFCASE/i.test(line)) {
+  // Flash briefcase if contains BRIEFCASE keyword
+  else if (/BRIEFCASE/i.test(pText)) {
     p = document.createElement('p');
     const span = document.createElement('span');
     span.className = 'flash-briefcase';
-    span.innerText = line;
+    span.innerText = pText;
     p.appendChild(span);
   }
-  // Highlighting key names: words in ALL CAPS in a line
+  // Note if contains NOTE keyword
+  else if (/NOTE:/i.test(pText)) {
+    p = document.createElement('p');
+    p.className = 'note';
+    p.innerText = pText.replace(/NOTE:/i,'');
+  }
+  // Default: sprinkle colors in sentence
   else {
     p = document.createElement('p');
-    // Replace ALL CAPS words with <strong>
-    p.innerHTML = line.replace(/\b([A-Z]{2,})\b/g,'<strong>$1</strong>');
+    const words = pText.split(' ');
+    words.forEach(word => {
+      p.appendChild(coloredSpan(word));
+    });
   }
 
-  styledContainer.appendChild(p);
+  styledDiv.appendChild(p);
 });
 
-// Replace raw div with styled content
-rawDiv.replaceWith(styledContainer);
+// Replace raw text with styled content
+rawDiv.replaceWith(styledDiv);
 </script>
 
 </body>
