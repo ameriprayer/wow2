@@ -47,43 +47,43 @@ I always emphasize the theme of "Some Gave All" in terms of service to the milit
 </div>
 
 <script>
-// Grab raw text and split into sentences
+// Grab raw text
 const rawDiv = document.getElementById('pas-legal-raw');
 const text = rawDiv.innerText.trim();
 const paragraphs = text.split(/\n{1,2}/).map(p => p.trim()).filter(p => p);
 
-// Create container for styled content
+// Container for styled content
 const styledDiv = document.createElement('div');
 
-// Color palettes for random sprinkling
+// PAS Legal color palette
 const colors = ['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
 const headingColors = ['#4CAF50','#2196F3','#FFEB3B'];
 
-// Function to create colored span
-function coloredSpan(text) {
+// Helper to color each word with cycling colors
+function coloredSpan(word, index) {
   const span = document.createElement('span');
-  span.style.color = colors[Math.floor(Math.random()*colors.length)];
-  span.innerText = text + " ";
+  span.style.color = colors[index % colors.length];
+  span.innerText = word + " ";
   return span;
 }
 
-// Process each paragraph
-paragraphs.forEach((pText,i) => {
+// Process paragraphs
+paragraphs.forEach((pText, i) => {
   let p;
 
-  // Make every 4th paragraph a subheading (h3)
+  // Headings: every 4th paragraph = h3 subtitle
   if (i % 4 === 0) {
     p = document.createElement('h3');
     p.style.color = headingColors[i % headingColors.length];
     p.innerText = pText;
   }
-  // Make every 8th paragraph a section-heading
+  // Section heading: every 8th paragraph
   else if (i % 8 === 0) {
     p = document.createElement('div');
     p.className = 'section-heading';
     p.innerText = pText;
   }
-  // Flash briefcase if contains BRIEFCASE keyword
+  // Flashing briefcase detection
   else if (/BRIEFCASE/i.test(pText)) {
     p = document.createElement('p');
     const span = document.createElement('span');
@@ -91,25 +91,25 @@ paragraphs.forEach((pText,i) => {
     span.innerText = pText;
     p.appendChild(span);
   }
-  // Note if contains NOTE keyword
+  // Notes detection
   else if (/NOTE:/i.test(pText)) {
     p = document.createElement('p');
     p.className = 'note';
     p.innerText = pText.replace(/NOTE:/i,'');
   }
-  // Default: sprinkle colors in sentence
+  // Default: sprinkle colors word by word
   else {
     p = document.createElement('p');
     const words = pText.split(' ');
-    words.forEach(word => {
-      p.appendChild(coloredSpan(word));
+    words.forEach((word, idx) => {
+      p.appendChild(coloredSpan(word, idx));
     });
   }
 
   styledDiv.appendChild(p);
 });
 
-// Replace raw text with styled content
+// Replace raw div with styled content
 rawDiv.replaceWith(styledDiv);
 </script>
 
