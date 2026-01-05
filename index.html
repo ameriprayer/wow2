@@ -4,67 +4,17 @@
 <meta charset="UTF-8">
 <title>PAS Legal Auto-Color</title>
 <style>
-/* ==========================
-   BODY TEXT SETTINGS (adjust here)
-   ========================== */
 body {
-  background-color: #000000;  /* Black background */
-  color: #FFFFFF;             /* Primary body text color (white) */
+  background-color: #000000;
+  color: #F5F5F5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 25px;
   line-height: 1.5;
-  font-size: 20px;            /* ← CHANGE THIS TO ADJUST BODY TEXT SIZE */
 }
-
-/* ==========================
-   HEADINGS
-   ========================== */
-h2 {
-  color: #4CAF50;           /* Emerald Green for title */
-  font-size: 3em;            /* Title size (larger than body) */
-  border-bottom: 3px solid #4CAF50;
-  padding-bottom: 8px;
-  margin-top: 20px;
-}
-
-h3 {
-  color: #2196F3;           /* Bright Blue for subtitles */
-  font-size: 2em;            /* Subtitle size (larger than body) */
-  margin-top: 15px;
-  margin-bottom: 10px;
-}
-
-/* ==========================
-   SECTION HEADINGS
-   ========================== */
-.section-heading {
-  color: #FFEB3B;           /* Yellow section divider */
-  font-weight: bold;
-  font-size: 1.4em;
-  margin-top: 15px;
-  padding-left: 5px;
-  border-left: 4px solid #FFEB3B;
-}
-
-/* ==========================
-   HIGHLIGHTS / NOTES
-   ========================== */
-strong {
-  color: #FF9800;            /* Orange highlight for key words */
-}
-
-.note {
-  background-color: #1A1A1A; /* Dark gray for notes */
-  color: #F44336;            /* Red text for notes */
-  font-style: italic;
-  padding: 10px 15px;
-  border-left: 5px solid #F44336;
-  margin: 15px 0;
-}
-
-/* ==========================
-   FLASHING BRIEFCASE
-   ========================== */
+h2 { color: #4CAF50; border-bottom: 3px solid #4CAF50; padding-bottom: 8px; margin-top: 20px; }
+h3 { color: #2196F3; margin-top: 15px; margin-bottom: 10px; font-size: 1.5em; }
+.section-heading { color: #FFEB3B; font-weight: bold; font-size: 1.2em; margin-top: 15px; padding-left: 5px; border-left: 4px solid #FFEB3B; }
+.note { background-color: #1A1A1A; color: #F44336; font-style: italic; padding: 10px 15px; border-left: 5px solid #F44336; margin: 15px 0; }
 @keyframes flashBriefcase {
   0% { color: #FF9800; }
   25% { color: #FFEB3B; }
@@ -72,23 +22,15 @@ strong {
   75% { color: #FFEB3B; }
   100% { color: #FF9800; }
 }
-
-.flash-briefcase {
-  font-weight: bold;
-  font-size: 1.3em;
-  animation: flashBriefcase 1s infinite;
-}
+.flash-briefcase { font-weight: bold; font-size: 1.3em; animation: flashBriefcase 1s infinite; }
 </style>
 </head>
 <body>
 
 <h2>PAS Legal Document</h2>
 
-<!-- ==========================
-     PASTE YOUR PLAIN TEXT BELOW
-     ========================== -->
 <div id="pas-legal-raw">
-321Greetings Bosch
+Greetings Bosch
 I created this blog JUST FOR YOU! But anybody can see it (it's not private). It pertains to what happened in 1996 when I was teaching at Coachella Valley High School in the valley of the same name, in the city of Coachella and/or Thermal, near Indio, Palm Desert, & Palm Springs. It is the poor end of the valley with mucho (many) Latino immigrants. My classrooms were 95% Latino, maybe more.
 
 How Did I End Up in Coachella?
@@ -106,72 +48,54 @@ What Bill did not tell me when he offered me the job was that he was retiring in
 </div>
 
 <script>
-// Grab the raw text
+// Grab raw text
 const rawDiv = document.getElementById('pas-legal-raw');
 const text = rawDiv.innerText.trim();
 const paragraphs = text.split(/\n{1,2}/).map(p => p.trim()).filter(p => p);
 
-// Container for styled content
 const styledDiv = document.createElement('div');
 
-// PAS Legal color palette for occasional word highlights
-const highlightColors = ['#FF9800','#FFEB3B','#2196F3','#4CAF50','#F44336'];
+// PAS Legal colors for sprinkling
+const highlightColors = ['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
 
-// Function to create a colored word
-function coloredSpan(word, index) {
-  const span = document.createElement('span');
-  // Every 5th word gets a color sprinkle
-  if (index % 5 === 0) {
-    span.style.color = highlightColors[index % highlightColors.length];
+// Helper: randomly color ~1 in 6 words
+function sprinkleColor(word) {
+  if (Math.random() < 0.16) { // ~16% chance to color
+    const span = document.createElement('span');
+    span.style.color = highlightColors[Math.floor(Math.random() * highlightColors.length)];
+    span.innerText = word + ' ';
+    return span;
   } else {
-    span.style.color = '#FFFFFF'; // default white
+    const span = document.createElement('span');
+    span.style.color = '#F5F5F5';
+    span.innerText = word + ' ';
+    return span;
   }
-  span.innerText = word + " ";
-  return span;
 }
 
-// Process paragraphs
-paragraphs.forEach((pText, i) => {
-  let p;
+paragraphs.forEach(pText => {
+  const p = document.createElement('p');
 
-  // Notes detection
-  if (/NOTE:/i.test(pText)) {
-    p = document.createElement('p');
+  // Notes
+  if (/^NOTE:/i.test(pText)) {
     p.className = 'note';
-    p.innerText = pText.replace(/NOTE:/i,'');
+    p.innerText = pText.replace(/^NOTE:/i,'').trim();
   }
-  // Flashing briefcase detection
+  // BRIEFCASE
   else if (/BRIEFCASE/i.test(pText)) {
-    p = document.createElement('p');
     const span = document.createElement('span');
     span.className = 'flash-briefcase';
     span.innerText = pText;
     p.appendChild(span);
   }
-  // Section headings detection (all caps short lines)
-  else if (/^[A-Z0-9\s]{3,50}$/.test(pText)) {
-    p = document.createElement('div');
-    p.className = 'section-heading';
-    p.innerText = pText;
-  }
-  // Subtitles: lines ending with colon
-  else if (pText.endsWith(':')) {
-    p = document.createElement('h3');
-    p.innerText = pText;
-  }
-  // Default: regular paragraph with occasional color sprinkling
+  // Default paragraph
   else {
-    p = document.createElement('p');
-    const words = pText.split(' ');
-    words.forEach((word, idx) => {
-      p.appendChild(coloredSpan(word, idx));
-    });
+    pText.split(/\s+/).forEach(word => p.appendChild(sprinkleColor(word)));
   }
 
   styledDiv.appendChild(p);
 });
 
-// Replace raw div with styled content
 rawDiv.replaceWith(styledDiv);
 </script>
 
