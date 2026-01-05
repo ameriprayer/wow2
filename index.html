@@ -7,7 +7,7 @@
 /* Base Dark Mode */
 body {
   background-color: #000000;
-  color: #F5F5F5;
+  color: #F5F5F5; /* primary text is white */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 25px;
   line-height: 1.5;
@@ -43,7 +43,7 @@ h3 { color: #2196F3; margin-top: 15px; margin-bottom: 10px; font-size: 1.5em; }
 
 <!-- PASTE ALL YOUR PLAIN TEXT BELOW -->
 <div id="pas-legal-raw">
-3I always emphasize the theme of "Some Gave All" in terms of service to the military (ie died in action, their last breath was in the midst of war ), but at the same time I think we should try to remember the unborn babies who never even got the chance for a first breath of life. They also "gave their all" unfortunately and sadly without a cause. I encourage everybody to continue to defend the unborn and fight (not literally) for their opportunity to breath a first breath, and live the life God intended for them . 
+I always emphasize the theme of "Some Gave All" in terms of service to the military (ie died in action, their last breath was in the midst of war ), but at the same time I think we should try to remember the unborn babies who never even got the chance for a first breath of life. They also "gave their all" unfortunately and sadly without a cause. I encourage everybody to continue to defend the unborn and fight (not literally) for their opportunity to breath a first breath, and live the life God intended for them . 
 </div>
 
 <script>
@@ -52,47 +52,46 @@ const rawDiv = document.getElementById('pas-legal-raw');
 const text = rawDiv.innerText.trim();
 const styledDiv = document.createElement('div');
 
-// PAS Legal color palette
-const colors = ['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
-const headingColors = ['#4CAF50','#2196F3','#FFEB3B'];
+// PAS legal occasional colors for emphasis
+const highlightColors = ['#4CAF50','#2196F3','#FFEB3B','#FF9800','#F44336'];
 
-// Split text into sentences by punctuation or spaces
-const sentences = text.split(/([.!?]\s+)|(\n)/).filter(Boolean);
+// Process text word by word
+const words = text.split(/\s+/);
+const p = document.createElement('p');
 
-// Process each sentence or block
-sentences.forEach((sentence, idx) => {
-  let el;
+words.forEach((word, idx) => {
+  const span = document.createElement('span');
 
-  // Detect NOTE:
-  if (/NOTE:/i.test(sentence)) {
-    el = document.createElement('p');
-    el.className = 'note';
-    el.innerText = sentence.replace(/NOTE:/i,'').trim();
+  // Detect KEY CAPS words for emphasis
+  if (/^[A-Z]{2,}$/.test(word)) {
+    span.style.color = highlightColors[idx % highlightColors.length];
+    span.style.fontWeight = 'bold';
+  } 
+  // Detect NOTE: lines
+  else if (/^NOTE:/i.test(word)) {
+    span.className = 'note';
+    span.innerText = word + ' ';
+    p.appendChild(span);
+    return;
   }
   // Detect BRIEFCASE
-  else if (/BRIEFCASE/i.test(sentence)) {
-    el = document.createElement('p');
-    const span = document.createElement('span');
-    span.className = 'flash-briefcase';
-    span.innerText = sentence.trim();
-    el.appendChild(span);
+  else if (/BRIEFCASE/i.test(word)) {
+    const flash = document.createElement('span');
+    flash.className = 'flash-briefcase';
+    flash.innerText = word + ' ';
+    p.appendChild(flash);
+    return;
   }
-  // Default: sprinkle PAS legal colors word by word
+  // Default text = white
   else {
-    el = document.createElement('p');
-    const words = sentence.trim().split(/\s+/);
-    words.forEach((word, wIdx) => {
-      const span = document.createElement('span');
-      span.style.color = colors[wIdx % colors.length];
-      span.innerText = word + " ";
-      el.appendChild(span);
-    });
+    span.style.color = '#F5F5F5';
   }
 
-  styledDiv.appendChild(el);
+  span.innerText = word + ' ';
+  p.appendChild(span);
 });
 
-// Replace raw div with styled content
+styledDiv.appendChild(p);
 rawDiv.replaceWith(styledDiv);
 </script>
 
